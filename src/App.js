@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 //Author: Viraj Patel
 
 function App() {
-    let INVALID_VALUE = -1
-    let MIDNIGHT = 0
+    let MIDNIGHT_ZERO = 0
+    let MIDNIGHT_TWENTY_FOUR = 24
     const [startTime, setStartTime] = useState("17:00");
     const [endTime, setEndTime] = useState("04:00");
     const [bedTime, setBedTime] = useState("20:00");
@@ -16,9 +16,12 @@ function App() {
     const [pay, setPay] = useState(0)
     const [errorMessage, setErrorMessage] = useState("")
 
-    useEffect(() => {
-        reloadPay()
-    })
+    //Bottom state variables are just for extra information and aren't necessary for the program to function.
+    const [startBedPay, setStartBedPay] = useState(null);
+    const [bedMidPay, setBedMidPay] = useState(null);
+    const [midEndPay, setMidEndPay] = useState(null);
+
+    useEffect(() => { reloadPay() })
 
     /*
     Requirements:
@@ -32,8 +35,11 @@ function App() {
     */
     const reloadPay = () => {
         let startToBed = calculatePay(startTimeHour, bedTimeHour, 12)
-        let bedToMid = calculatePay(bedTimeHour, MIDNIGHT, 8)
-        let midToEnd = calculatePay(MIDNIGHT, endTimeHour, 16)
+        let bedToMid = calculatePay(bedTimeHour, MIDNIGHT_TWENTY_FOUR, 8)
+        let midToEnd = calculatePay(MIDNIGHT_ZERO, endTimeHour, 16)
+        setStartBedPay(startToBed)
+        setBedMidPay(bedToMid)
+        setMidEndPay(midToEnd)
         setPay(parseInt(value) * (startToBed + bedToMid + midToEnd))
     }
 
@@ -44,12 +50,7 @@ function App() {
     3) amount(int) - hourly rate
     Returns total pay for the time range in int
      */
-    const calculatePay = (start, end, amount) => {
-        if (!Number.isInteger(start) || !Number.isInteger(end) || !Number.isInteger(amount))
-            return INVALID_VALUE
-        let tempRange = end - start
-        return tempRange > 0 ? tempRange * amount : INVALID_VALUE
-    }
+    const calculatePay = (start, end, amount) => { return (end - start) * amount }
 
     /*
     Required Parameters:
@@ -65,7 +66,7 @@ function App() {
     return (
         <div className="App">
             <h1>Babysitter Calculator</h1>
-            <h4>Viraj Patel - <a href="https://github.com/viraj325">GitHub</a></h4>
+            <h4>Viraj Patel - <a href="https://github.com/viraj325/babysitter_kata">GitHub</a></h4>
             <p>How many nights?</p>
             <input
                 type="text"
@@ -129,9 +130,13 @@ function App() {
                 }}
                 step="60"
                 value={ bedTime }/>
-            <p>You're pay will be ${ pay } for { value } nights</p>
+            <h3><u>Pay Break-Down:</u></h3>
+            <p>Start to Bedtime($12/hr) = ${ startBedPay }</p>
+            <p>Bedtime to Midnight($8/hr) = ${ bedMidPay }</p>
+            <p>Midnight to End($16/hr) = ${ midEndPay }</p>
+            <h3><b>Your pay will be ${ pay } for { value } night(s)</b></h3>
             {
-                errorMessage.length > 0 ? <p>{errorMessage}</p> : null
+                errorMessage.length > 0 ? <p>{ errorMessage }</p> : null
             }
         </div>
     );
