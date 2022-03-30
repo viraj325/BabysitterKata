@@ -1,5 +1,7 @@
 import './App.css';
 import { useEffect, useState } from "react";
+const parseHour = require("./ParseHour")
+const calculatePay = require("./CalculatePay")
 
 //Author: Viraj Patel
 
@@ -37,30 +39,10 @@ function App() {
         let startToBed = calculatePay(startTimeHour, bedTimeHour, 12)
         let bedToMid = calculatePay(bedTimeHour, MIDNIGHT_TWENTY_FOUR, 8)
         let midToEnd = calculatePay(MIDNIGHT_ZERO, endTimeHour, 16)
-        setStartBedPay(startToBed)
-        setBedMidPay(bedToMid)
-        setMidEndPay(midToEnd)
+        setStartBedPay(parseInt(value) * startToBed)
+        setBedMidPay(parseInt(value) * bedToMid)
+        setMidEndPay(parseInt(value) * midToEnd)
         setPay(parseInt(value) * (startToBed + bedToMid + midToEnd))
-    }
-
-    /*
-    Required Parameters:
-    1) start(int) - start time
-    2) end(int) - end time
-    3) amount(int) - hourly rate
-    Returns total pay for the time range in int
-     */
-    const calculatePay = (start, end, amount) => { return (end - start) * amount }
-
-    /*
-    Required Parameters:
-    1) time(string)
-    Returns the hour in int
-    ex. "11:00" -> 11
-     */
-    const parseHour = (time) => {
-        // the minutes don't matter since the user will be getting paid hourly
-        return parseInt(time.split(":")[0])
     }
 
     return (
